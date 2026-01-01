@@ -46,6 +46,6 @@ If you want to create a standalone executable (`.exe`) file for Windows, you can
 
 ## ⚠️ Deployment Note:
 
-This GUI is only prototype version
+This GUI is only prototype version.
 
 
