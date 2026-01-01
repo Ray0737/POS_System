@@ -1,4 +1,4 @@
-# Grade Calculator Program
+# POS System
 Side Project 
 
 ## Project Status:
