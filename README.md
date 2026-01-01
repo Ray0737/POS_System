@@ -46,6 +46,7 @@ If you want to create a standalone executable (`.exe`) file for Windows, you can
 
 ## ⚠️ Deployment Note:
 
-This GUI is only prototype version.
+Please ensure you **remove** or replace all placeholder test accounts and credentials before deploying or sharing the application. 
+However for only testing purpose | Username: Test_user / Password: 0123
 
 
