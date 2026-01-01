@@ -9,7 +9,6 @@ import csv
 ### INITIAL CONFIGURATION ###
 
 users = {"Test_user": "0123"}
-# Menu items with prices
 menu_items = {
     "Thai Tea": 45.00,
     "Milk Tea": 40.00,
@@ -64,9 +63,7 @@ def export_to_csv():
     try:
         with open(filename, mode='w', newline='', encoding='utf-8-sig') as f:
             writer = csv.writer(f)
-            # Header
             writer.writerow(["Item/Task", "Status", "Type", "Timestamp", "Notes", "Staff", "Amount"])
-            # Data
             for item in tree.get_children():
                 writer.writerow(tree.item(item, 'values'))
                 
@@ -87,7 +84,7 @@ def load_data_from_json():
     except Exception as e:
         print(f"Load error: {e}")
 
-### POS LOGIC ###
+
 
 def add_to_cart():
     item = item_var.get()
@@ -124,16 +121,12 @@ def checkout():
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     summary = ", ".join([f"{i['item']}x{i['qty']}" for i in cart])
     
-    # Add to main ledger
     tree.insert("", 0, values=(summary, "Completed ✅", "SALE", timestamp, notes_entry.get(), staff_var.get(), f"{total:.2f}"))
     
-    # Clear cart
     cart = []
     update_cart_display()
     notes_entry.delete(0, tk.END)
     messagebox.showinfo("POS", f"Transaction Complete: {total:.2f} THB")
-
-### UI HELPERS ###
 
 def update_clock(label):
     label.config(text=datetime.now().strftime("%H:%M:%S"))
@@ -149,9 +142,6 @@ def login():
         main_window()
     else:
         messagebox.showerror("Auth Error", "Invalid Credentials")
-
-### WINDOWS ###
-
     
 def display_login():
     global user_entry, code_entry, login_root
@@ -251,3 +241,4 @@ def main_window():
 
 if __name__ == "__main__":
     display_login()
+
