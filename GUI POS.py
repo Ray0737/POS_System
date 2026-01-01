@@ -4,10 +4,11 @@ from datetime import datetime
 import json
 import os 
 import calendar
+import csv
 
 ### INITIAL CONFIGURATION ###
 
-users = {"Ray": "010410"}
+users = {"Test_user": "0123"}
 # Menu items with prices
 menu_items = {
     "Thai Tea": 45.00,
@@ -50,6 +51,28 @@ def save_data_to_json():
         messagebox.showinfo("Success", "Data saved successfully.")
     except Exception as e:
         messagebox.showerror("Error", f"Save failed: {e}")
+
+def export_to_csv():
+    """Converts the current table data into an Excel-friendly CSV file"""
+    global current_user, tree
+    if not tree.get_children():
+        messagebox.showwarning("Export", "No data available to export.")
+        return
+
+    filename = f"Sales_Report_{datetime.now().strftime('%Y-%m-%d')}.csv"
+    
+    try:
+        with open(filename, mode='w', newline='', encoding='utf-8-sig') as f:
+            writer = csv.writer(f)
+            # Header
+            writer.writerow(["Item/Task", "Status", "Type", "Timestamp", "Notes", "Staff", "Amount"])
+            # Data
+            for item in tree.get_children():
+                writer.writerow(tree.item(item, 'values'))
+                
+        messagebox.showinfo("Export Success", f"Report generated: {filename}\nYou can now open this file in Excel.")
+    except Exception as e:
+        messagebox.showerror("Export Error", f"Failed to create CSV: {e}")
 
 def load_data_from_json():
     global current_user, tree
@@ -216,6 +239,7 @@ def main_window():
     notes_entry.pack(pady=5)
 
     tk.Button(ctrl_frame, text="Save Data", command=save_data_to_json, width=15).pack(pady=5)
+    tk.Button(ctrl_frame, text="📊 Export to Excel", command=export_to_csv, width=18, bg="#2E7D32", fg="white").pack(pady=5)
     tk.Button(ctrl_frame, text="Delete Entry", command=lambda: tree.delete(tree.selection()), width=15).pack(pady=5)
     
     clock_label = tk.Label(root, text="", font=("Arial", 10))
