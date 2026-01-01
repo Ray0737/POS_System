@@ -12,7 +12,7 @@ Side Project
 
 ---
 
-![Planner Interface Screenshot](UI.png)
+
 
 ---
 
