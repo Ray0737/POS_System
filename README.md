@@ -7,8 +7,8 @@ Side Project
 | :--- | :--- |
 | **Purpose** | Practice |.
 | **Tools** | GUI - Tkinter |
-| **Current Version** | 1.0.0 |
-| **Latest Edit** | January 1, 2026|
+| **Current Version** | 1.0.1 |
+| **Latest Edit** | January 2, 2026|
 
 ---
 
