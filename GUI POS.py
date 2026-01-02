@@ -9,6 +9,7 @@ import csv
 ### INITIAL CONFIGURATION ###
 
 users = {"Test_user": "0123"}
+# Menu items with prices
 menu_items = {
     "Thai Tea": 45.00,
     "Milk Tea": 40.00,
@@ -44,47 +45,31 @@ def save_data_to_json():
             "total": values[6]
         })
 
-    try:
-        with open(get_data_file_path(current_user), 'w') as f:
-            json.dump(records, f, indent=4)
+    with open(get_data_file_path(current_user), 'w') as f:
+        json.dump(records, f, indent=4)
         messagebox.showinfo("Success", "Data saved successfully.")
-    except Exception as e:
-        messagebox.showerror("Error", f"Save failed: {e}")
 
 def export_to_csv():
-    """Converts the current table data into an Excel-friendly CSV file"""
     global current_user, tree
-    if not tree.get_children():
-        messagebox.showwarning("Export", "No data available to export.")
-        return
-
     filename = f"Sales_Report_{datetime.now().strftime('%Y-%m-%d')}.csv"
-    
-    try:
-        with open(filename, mode='w', newline='', encoding='utf-8-sig') as f:
-            writer = csv.writer(f)
-            writer.writerow(["Item/Task", "Status", "Type", "Timestamp", "Notes", "Staff", "Amount"])
-            for item in tree.get_children():
-                writer.writerow(tree.item(item, 'values'))
-                
+    with open(filename, mode='w', newline='', encoding='utf-8-sig') as f:
+        writer = csv.writer(f)
+        writer.writerow(["Item/Task", "Status", "Type", "Timestamp", "Notes", "Staff", "Amount"])
+        for item in tree.get_children():
+            writer.writerow(tree.item(item, 'values'))
         messagebox.showinfo("Export Success", f"Report generated: {filename}\nYou can now open this file in Excel.")
-    except Exception as e:
-        messagebox.showerror("Export Error", f"Failed to create CSV: {e}")
 
 def load_data_from_json():
     global current_user, tree
     file_path = get_data_file_path(current_user)
     if not os.path.exists(file_path): return
-    try:
-        with open(file_path, 'r') as f:
-            data = json.load(f)
+    with open(file_path, 'r') as f:
+        data = json.load(f)
         tree.delete(*tree.get_children())
         for r in data:
             tree.insert("", tk.END, values=(r["item"], r["status"], r["type"], r["timestamp"], r["notes"], r["staff"], r["total"]))
-    except Exception as e:
-        print(f"Load error: {e}")
 
-
+### POS LOGIC ###
 
 def add_to_cart():
     item = item_var.get()
@@ -122,7 +107,7 @@ def checkout():
     summary = ", ".join([f"{i['item']}x{i['qty']}" for i in cart])
     
     tree.insert("", 0, values=(summary, "Completed ✅", "SALE", timestamp, notes_entry.get(), staff_var.get(), f"{total:.2f}"))
-    
+
     cart = []
     update_cart_display()
     notes_entry.delete(0, tk.END)
@@ -136,13 +121,35 @@ def login():
     global current_user
     username = user_entry.get()
     password = code_entry.get()
+    
     if username in users and users[username] == password:
         current_user = username
         login_root.destroy()
         main_window()
     else:
-        messagebox.showerror("Auth Error", "Invalid Credentials")
+        response = messagebox.askyesno("Auth Error", "Invalid Credentials. Would you like to register a new account?")
+        if response:
+            login_root.destroy()
+            display_register()
+
+def register():
+    username = user_entry2.get()
+    password = code_entry2.get()
     
+    if not username or not password:
+        messagebox.showwarning("Input Error", "Fields cannot be empty")
+        return
+
+    if username not in users:
+        users[username] = password
+        messagebox.showinfo("Success", f"Account created for {username}!")
+        register_root.destroy()
+        display_login() 
+    else:
+        messagebox.showerror("Auth Error", "Username already exists")
+
+### WINDOWS ###
+   
 def display_login():
     global user_entry, code_entry, login_root
     login_root = tk.Tk()
@@ -166,6 +173,30 @@ def display_login():
 
     tk.Button(login_root, text="Submit", command=login).pack(pady=15)
     login_root.mainloop()
+    
+def display_register():
+    global user_entry2, code_entry2, register_root
+    register_root = tk.Tk()
+    register_root.title("POS System Register")
+    register_root.geometry("400x200")
+    
+    input_frame = tk.Frame(register_root)
+    input_frame.pack(pady=20)
+    
+    password_frame = tk.Frame(register_root)
+    password_frame.pack(pady=5)
+    
+    tk.Label(input_frame, text="System Registeration").pack(side="top", pady=10)
+    tk.Label(input_frame, text="Username:").pack(side="left")
+    user_entry2 = tk.Entry(input_frame, width=30)
+    user_entry2.pack(padx=10, side="left")
+
+    tk.Label(password_frame, text="Password:").pack(side="left")
+    code_entry2 = tk.Entry(password_frame, width=30, show="*")
+    code_entry2.pack(padx=10, side="left")
+
+    tk.Button(register_root, text="Submit", command=register).pack(pady=15)
+    register_root.mainloop()
 
 def main_window():
     global tree, item_var, qty_entry, cart_list, total_label, staff_var, notes_entry
@@ -241,4 +272,3 @@ def main_window():
 
 if __name__ == "__main__":
     display_login()
-
